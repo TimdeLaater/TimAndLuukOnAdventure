@@ -5,6 +5,11 @@ TagManager:
   serializedVersion: 2
   tags:
   - Ground
+  - StartCurb
+  - ScoreText
+  - Score
+  - Wall
+  - TurnManager
   layers:
   - Default
   - TransparentFX
