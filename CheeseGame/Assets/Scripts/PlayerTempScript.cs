@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerTempScript : MonoBehaviour
@@ -8,19 +9,20 @@ public class PlayerTempScript : MonoBehaviour
     // Start is called before the first frame update
     public float speed;
 
-    private int score;
     private Rigidbody rb;
     public TextMeshProUGUI text;
 
+    public TurnManager tm;
+
     void Start()
     {
-        score = 0;
         rb = GetComponent<Rigidbody>();
         GameObject startCurb = GameObject.FindGameObjectWithTag("StartCurb");
         Collider colliderCurb = startCurb.GetComponent<Collider>();
         Physics.IgnoreCollision(colliderCurb,GetComponent<Collider>());
-        
-        text.text = score.ToString();
+        tm.initializeTurns();
+
+        text.text = "Player " + (tm.playerData.turn + 1).ToString() + " score: " + tm.playerData.score.ToString();
     }
 
     // Update is called once per frame
@@ -31,8 +33,14 @@ public class PlayerTempScript : MonoBehaviour
         Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);
 
         rb.AddForce(movement * speed);
-    }
 
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            tm.switchTurns();
+            text.text = "Player " + (tm.playerData.turn + 1).ToString() + " score: " + tm.playerData.score.ToString();
+        }
+
+    }
 
 
     private void OnTriggerEnter(Collider other)
@@ -41,9 +49,12 @@ public class PlayerTempScript : MonoBehaviour
         if (other.gameObject.CompareTag("Score"))
         {
             ScoringScript sc = other.gameObject.GetComponent<ScoringScript>();
-            score += sc.points;
-            text.text = score.ToString();
-
+            tm.playerData.score += sc.points;
+            tm.switchTurns();
+            text.text = "Player " + (tm.playerData.turn + 1).ToString() + " score: " + tm.playerData.score.ToString();
+           
         }
     }
+
+
 }
