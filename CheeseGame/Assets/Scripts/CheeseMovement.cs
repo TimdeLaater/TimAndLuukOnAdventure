@@ -7,7 +7,7 @@ public class CheeseMovement : MonoBehaviour
     public float rollSpeedThreshold; // Minimum speed required to prevent the cheese from falling
     public float rollingResistance; // Resistance to slow down the roll
     public float horizontalTorqueScale = 0.5f; // Scaling factor for horizontal torque
-    public float maxVelocity = 10f; // Maximum velocity limit
+    public float maxVelocity; // Maximum velocity limit
     public BoxCollider boxCollider; // Reference to the BoxCollider component
 
    
@@ -17,13 +17,16 @@ public class CheeseMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         hasThrown = false;
-    }
-    private void OnTriggerStay(Collider other)
-    {
-            
+        GameObject startCurb = GameObject.FindGameObjectWithTag("StartCurb");
+        Collider colliderCurb = startCurb.GetComponent<Collider>();
+        Physics.IgnoreCollision(colliderCurb, GetComponent<Collider>());
     }
 
-    
+
+    private void OnTriggerExit(Collider other)
+    {
+        hasThrown= true;
+    }
 
     private void FixedUpdate()
     {
@@ -37,12 +40,11 @@ public class CheeseMovement : MonoBehaviour
             Vector3 movement = new Vector3(horizontal, 0.0f, vertical);
 
             // Apply the movement force to the cheese within the box collider
-            if (boxCollider.bounds.Contains(transform.position))
-            {
-                rb.AddForce(movement * speed, ForceMode.Force);
+            
+            rb.AddForce(movement * speed, ForceMode.Force);
 
-                rb.velocity = Vector3.ClampMagnitude(rb.velocity, maxVelocity);
-            }
+            //rb.velocity = Vector3.ClampMagnitude(rb.velocity, maxVelocity);
+            
 
             // Apply rolling resistance to slow down the roll
             Vector3 angularVelocity = rb.angularVelocity;
